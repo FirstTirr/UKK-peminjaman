@@ -1,0 +1,50 @@
+register:
+1. api/auth/register: //1
+    {
+        "username": "peminjam1",
+        "password": "password123",
+        "no_hp": "08123456789",
+        "alamat": "Payakumbuh"    
+    }
+
+login:
+1. api/auth/login: //2
+    {
+        "username": "admin",
+        "password": "admin123"
+    }
+
+CRUD user
+1. api/users //3
+    {
+        "username": "petugas1",
+        "password": "password123",
+        "role": "petugas",
+        "no_hp": "08123456789",
+        "alamat": "Payakumbuh"
+    }
+
+2. api/users/2 //4
+3. api/users/2 //5 (PUT)
+4. api/users/2 //6 (DELETE  )
+
+CRUD kategori
+1. api/kategori: //7
+    {
+        "nama_kategori": "Elektronik"
+    }
+2. api/kategori //8
+3. api/kategori/:id //9 
+
+CRUD alat
+1. api/alat: //10
+    {
+        "nama_alat": "test delete",
+        "id_kategori": 2,
+        "stok": 10,
+        "deskripsi": "Alat ukur arus akurat dan tegangan listrik rendah",
+        "harga_perhari": 50000.00
+    }
+2. api/alat/:id (put) //11
+3. api/alat/:id (delete) //12
+4. api/alat (get) //13
