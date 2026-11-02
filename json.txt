@@ -48,3 +48,34 @@ CRUD alat
 2. api/alat/:id (put) //11
 3. api/alat/:id (delete) //12
 4. api/alat (get) //13
+
+CRUD peminjaman
+1. api/peminjaman: //14
+    {
+        "tgl_pinjam": "2026-06-01",
+        "tgl_rencana_kembali": "2026-06-05",
+        "items": [
+            {
+                "id_alat": 1,
+                "jumlah": 2
+            }
+        ]
+    }
+2. api/peminjaman/read //15
+3. api/peminjaman/edit/status/1 //16
+4. api/peminjaman/kembalikan/1: //17
+    {
+        "tgl_kembali_sebenarnya": "2026-06-07",
+        "tarif_denda": 10000
+    }
+
+LAPORAN
+1. api/log-aktivitas/read /18
+2. api/laporan/read //19
+
+CRUD pengembalian:
+1. api/peminjaman/kembalikan/:id: //20
+    {
+        "tgl_kembali_sebenarnya": "2026-06-07",
+        "tarif_denda": 10000
+    }
