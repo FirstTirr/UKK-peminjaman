@@ -17,7 +17,7 @@ export default function AdminDashboardPage() {
                 const [alatRes, peminjamanRes, userRes] = await Promise.all([
                     api.get('/alat').catch(() => ({ data: [] })),
                     api.get('/peminjaman/read').catch(() => ({ data: [] })),
-                    api.get('/user').catch(() => ({ data: [] })),
+                    api.get('/users/read').catch(() => ({ data: [] })),
                 ]);
 
                 setStats({

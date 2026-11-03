@@ -6,19 +6,30 @@ const authController = {
     async register(req, res) {
         try {
             const { username, password, role, no_hp, alamat } = req.body;
+            if (!username?.trim() || !password || !no_hp?.trim() || !alamat?.trim()) {
+                return res.status(400).json({ error: 'Username, password, nomor HP, dan alamat wajib diisi' });
+            }
+            if (password.length < 6) {
+                return res.status(400).json({ error: 'Password minimal 6 karakter' });
+            }
+
             const hashedPassword = await bcrypt.hash(password, 10);
-            const userRole = role || 'peminjam';
+            const allowedRoles = ['admin', 'petugas', 'peminjam'];
+            const userRole = req.user?.role === 'admin' && allowedRoles.includes(role) ? role : 'peminjam';
 
             const id = await UserModel.create({
-                username,
+                username: username.trim(),
                 password_hash: hashedPassword,
                 role: userRole,
-                no_hp,
-                alamat
+                no_hp: no_hp.trim(),
+                alamat: alamat.trim()
             });
 
             res.status(201).json({ message: 'Registrasi berhasil', id_user: id });
         } catch (error) {
+            if (error.code === 'ER_DUP_ENTRY') {
+                return res.status(409).json({ error: 'Username sudah digunakan' });
+            }
             res.status(500).json({ error: error.message });
         }
     },

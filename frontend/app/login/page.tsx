@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import axios from 'axios';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/src/services/auth';
 
@@ -35,16 +37,19 @@ export default function LoginPage() {
             } else {
                 router.push('/peminjam/dashboard');
             }
-        } catch (err: any) {
-            setError(err.response?.data?.message || err.response?.data?.error || 'Gagal login, periksa kembali username dan password.');
+        } catch (requestError: unknown) {
+            const message = axios.isAxiosError<{ message?: string; error?: string }>(requestError)
+                ? requestError.response?.data?.message || requestError.response?.data?.error
+                : undefined;
+            setError(message || 'Gagal login, periksa kembali username dan password.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-            <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-sm border border-gray-100">
+        <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-8">
+            <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-sm border border-gray-100 sm:p-8">
                 <div className="mb-6 text-center">
                     <h1 className="text-2xl font-bold tracking-tight text-gray-900">Peminjaman Alat</h1>
                     <p className="text-sm text-gray-500 mt-1">Silakan masuk ke akun Anda</p>
@@ -110,7 +115,10 @@ export default function LoginPage() {
                         {loading ? 'Memproses...' : 'Masuk'}
                     </button>
                 </form>
+                <p className="mt-5 text-center text-sm text-gray-500">
+                    Belum memiliki akun? <Link href="/register" className="font-semibold text-indigo-600 hover:text-indigo-500">Daftar sekarang</Link>
+                </p>
             </div>
-        </div>
+        </main>
     );
 }

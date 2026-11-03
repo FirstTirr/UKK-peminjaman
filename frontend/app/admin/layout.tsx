@@ -1,4 +1,14 @@
-import Sidebar from '@/components/sidebar';
+import PanelLayout, { NavItem } from '@/components/sidebar';
+
+const navItems: NavItem[] = [
+    { name: 'Dashboard', href: '/admin/dashboard' },
+    { name: 'Manajemen Alat', href: '/admin/alat' },
+    { name: 'Kategori Alat', href: '/admin/kategori' },
+    { name: 'Data Peminjaman', href: '/admin/peminjaman' },
+    { name: 'Data Pengembalian', href: '/admin/pengembalian' },
+    { name: 'Manajemen User', href: '/admin/user' },
+    { name: 'Log Aktivitas', href: '/admin/log-aktivitas' },
+];
 
 export default function AdminLayout({
     children,
@@ -6,11 +16,8 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="flex min-h-screen bg-gray-50">
-            <Sidebar />
-            <main className="flex-1 p-8 overflow-y-auto">
-                {children}
-            </main>
-        </div>
+        <PanelLayout title="Admin Panel" subtitle="Sistem Peminjaman Alat" navItems={navItems}>
+            {children}
+        </PanelLayout>
     );
 }

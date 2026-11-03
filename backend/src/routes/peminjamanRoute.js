@@ -3,11 +3,11 @@ const router = express.Router();
 const peminjamanController = require('../controllers/peminjamanController');
 const { verifyToken, restrictTo } = require('../middleware/authMiddleware');
 
-// Lihat daftar peminjaman (Admin & Petugas)
-router.get('/read', verifyToken, restrictTo('admin', 'petugas'), peminjamanController.read);
+// Admin/petugas melihat semua peminjaman; peminjam hanya melihat miliknya sendiri
+router.get('/read', verifyToken, restrictTo('admin', 'petugas', 'peminjam'), peminjamanController.read);
 
 // Peminjam mengajukan peminjaman alat
-router.post('/', verifyToken, restrictTo('peminjam'), peminjamanController.create);
+router.post('/', verifyToken, restrictTo('peminjam', 'petugas'), peminjamanController.create);
 
 // Petugas/Admin mengubah status peminjaman (Menunggu -> Disetujui / Dipinjam / Ditolak)
 router.put('/edit/status/:id', verifyToken, restrictTo('admin', 'petugas'), peminjamanController.editStatus);

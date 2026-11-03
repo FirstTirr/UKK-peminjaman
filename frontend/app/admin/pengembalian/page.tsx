@@ -1,63 +1,65 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import api from '@/src/lib/api';
+import Pagination from '@/components/pagination';
+import { usePagination } from '@/src/hooks/use-pagination';
+import { laporanService, Pengembalian } from '@/src/services/laporan';
 
 export default function AdminPengembalianPage() {
-    const [pengembalianList, setPengembalianList] = useState<any[]>([]);
+    const [pengembalianList, setPengembalianList] = useState<Pengembalian[]>([]);
+    const { pageItems, currentPage, totalPages, setPage } = usePagination(pengembalianList);
 
     useEffect(() => {
-        // Mengambil data peminjaman/pengembalian dari backend
-        api.get('/peminjaman/read')
-            .then(res => {
-                // Filter yang statusnya dikembalikan atau sudah selesai
-                const data = Array.isArray(res.data) ? res.data.filter((item: any) => item.status === 'dikembalikan' || item.status === 'selesai') : [];
-                setPengembalianList(data);
-            })
-            .catch(err => console.error('Gagal memuat data pengembalian', err));
+        laporanService.getPengembalian()
+            .then((data) => setPengembalianList(Array.isArray(data) ? data : []))
+            .catch((error: unknown) => console.error('Gagal memuat data pengembalian', error));
     }, []);
 
     return (
-        <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Data Pengembalian Alat</h1>
-            
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                <table className="w-full text-left border-collapse text-sm">
-                    <thead className="bg-gray-50 border-b border-gray-100 text-gray-700">
-                        <tr>
-                            <th className="p-4 font-semibold">ID</th>
-                            <th className="p-4 font-semibold">Peminjam</th>
-                            <th className="p-4 font-semibold">Tgl Rencana Kembali</th>
-                            <th className="p-4 font-semibold">Tgl Dikembalikan</th>
-                            <th className="p-4 font-semibold">Denda (Rp)</th>
-                            <th className="p-4 font-semibold">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100 text-gray-800">
-                        {pengembalianList.map((item) => (
-                            <tr key={item.id_peminjaman} className="hover:bg-gray-50">
-                                <td className="p-4">#{item.id_peminjaman}</td>
-                                <td className="p-4 font-medium">{item.username || item.nama_user || 'User'}</td>
-                                <td className="p-4">{item.tgl_rencana_kembali?.slice(0, 10)}</td>
-                                <td className="p-4">{item.tgl_kembali_sebenarnya?.slice(0, 10) || '-'}</td>
-                                <td className="p-4 text-red-600 font-semibold">
-                                    Rp {Number(item.denda || 0).toLocaleString('id-ID')}
-                                </td>
-                                <td className="p-4">
-                                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
-                                        {item.status}
-                                    </span>
-                                </td>
-                            </tr>
-                        ))}
-                        {pengembalianList.length === 0 && (
+        <div className="mx-auto w-full max-w-7xl">
+            <h1 className="mb-6 text-xl font-bold text-gray-900 sm:text-2xl">Data Pengembalian Alat</h1>
+
+            <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+                <div className="overflow-x-auto">
+                    <table className="w-full min-w-[850px] border-collapse text-left text-sm">
+                        <thead className="border-b border-gray-100 bg-gray-50 text-gray-700">
                             <tr>
-                                <td colSpan={6} className="p-6 text-center text-gray-500">Belum ada data pengembalian alat.</td>
+                                <th className="p-4 font-semibold">ID</th>
+                                <th className="p-4 font-semibold">Peminjam</th>
+                                <th className="p-4 font-semibold">Rencana Kembali</th>
+                                <th className="p-4 font-semibold">Dikembalikan</th>
+                                <th className="p-4 font-semibold">Denda</th>
+                                <th className="p-4 font-semibold">Total Pembayaran</th>
+                                <th className="p-4 font-semibold">Status</th>
                             </tr>
-                        )}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 text-gray-800">
+                            {pageItems.map((item) => (
+                                <tr key={item.id_pengembalian} className="hover:bg-gray-50">
+                                    <td className="p-4 font-medium">#{item.id_peminjaman}</td>
+                                    <td className="p-4 font-medium">{item.peminjam}</td>
+                                    <td className="p-4">{item.tgl_rencana_kembali.slice(0, 10)}</td>
+                                    <td className="p-4">{item.tgl_kembali_sebenarnya.slice(0, 10)}</td>
+                                    <td className="p-4 font-semibold text-red-600">Rp {Number(item.denda).toLocaleString('id-ID')}</td>
+                                    <td className="p-4 font-semibold">Rp {Number(item.total_pembayaran).toLocaleString('id-ID')}</td>
+                                    <td className="p-4">
+                                        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                                            {item.status}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
+                            {pengembalianList.length === 0 && (
+                                <tr>
+                                    <td colSpan={7} className="p-8 text-center text-gray-500">Belum ada data pengembalian alat.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
+            <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={pengembalianList.length} onPageChange={setPage} />
         </div>
     );
 }

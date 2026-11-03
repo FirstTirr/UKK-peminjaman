@@ -1,8 +1,12 @@
 import api from '@/src/lib/api';
 
+export interface Kategori {
+    id_kategori: number;
+    nama_kategori: string;
+}
+
 export const kategoriService = {
-    async getAll() {
-        // Wajib /kategori/read karena di backend menggunakan router.get('/read', ...)
+    async getAll(): Promise<Kategori[]> {
         const response = await api.get('/kategori/read');
         return response.data;
     },
@@ -11,12 +15,10 @@ export const kategoriService = {
         return response.data;
     },
     async update(id_kategori: number, nama_kategori: string) {
-        // Wajib /kategori/edit/:id sesuai backend router.put('/edit/:id', ...)
         const response = await api.put(`/kategori/edit/${id_kategori}`, { nama_kategori });
         return response.data;
     },
     async delete(id_kategori: number) {
-        // Wajib /kategori/delete/:id sesuai backend router.delete('/delete/:id', ...)
         const response = await api.delete(`/kategori/delete/${id_kategori}`);
         return response.data;
     }

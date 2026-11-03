@@ -5,7 +5,8 @@ const db = require('../config/db');
 const peminjamanController = {
     async read(req, res) {
         try {
-            const data = await PeminjamanModel.getAll();
+            const id_user = req.user.role === 'peminjam' ? req.user.id_user : null;
+            const data = await PeminjamanModel.getAll(id_user);
             res.json(data);
         } catch (error) {
             res.status(500).json({ error: error.message });

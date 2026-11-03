@@ -15,6 +15,24 @@ const LaporanModel = {
             ORDER BY p.created_at DESC
         `);
         return rows;
+    },
+    async getPengembalian() {
+        const [rows] = await db.query(`
+            SELECT
+                pg.id_pengembalian,
+                pg.id_peminjaman,
+                u.username AS peminjam,
+                p.tgl_rencana_kembali,
+                pg.tgl_kembali_sebenarnya,
+                pg.denda,
+                pg.total_pembayaran,
+                p.status
+            FROM pengembalian pg
+            JOIN peminjaman p ON pg.id_peminjaman = p.id_peminjaman
+            JOIN user u ON p.id_user = u.id_user
+            ORDER BY pg.created_at DESC, pg.id_pengembalian DESC
+        `);
+        return rows;
     }
 };
 
