@@ -35,7 +35,19 @@ export default function AdminAlatPage() {
     };
 
     useEffect(() => {
-        fetchData();
+        let isCancelled = false;
+        Promise.all([alatService.getAll(), kategoriService.getAll()])
+            .then(([alat, kategori]) => {
+                if (!isCancelled) {
+                    setAlatList(Array.isArray(alat) ? alat : []);
+                    setKategoriList(Array.isArray(kategori) ? kategori : []);
+                }
+            })
+            .catch((error: unknown) => console.error('Gagal mengambil data alat', error));
+
+        return () => {
+            isCancelled = true;
+        };
     }, []);
 
     const handleAdd = async (e: React.FormEvent) => {
@@ -53,7 +65,7 @@ export default function AdminAlatPage() {
             setHargaPerHari('');
             setIdKategori('');
             fetchData();
-        } catch (err) {
+        } catch {
             alert('Gagal menambah alat');
         }
     };
@@ -70,7 +82,7 @@ export default function AdminAlatPage() {
             });
             setIsEditOpen(false);
             fetchData();
-        } catch (err) {
+        } catch {
             alert('Gagal memperbarui alat');
         }
     };
@@ -80,7 +92,7 @@ export default function AdminAlatPage() {
         try {
             await alatService.delete(id);
             fetchData();
-        } catch (err) {
+        } catch {
             alert('Gagal menghapus alat');
         }
     };

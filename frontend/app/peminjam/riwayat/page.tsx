@@ -1,11 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Pagination from '@/components/pagination';
+import { usePagination } from '@/src/hooks/use-pagination';
 import { peminjamanService, Peminjaman } from '@/src/services/peminjaman';
 
 export default function PeminjamRiwayatPage() {
     const [riwayatList, setRiwayatList] = useState<Peminjaman[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { pageItems, currentPage, totalPages, setPage } = usePagination(riwayatList);
 
     useEffect(() => {
         const fetchRiwayat = async () => {
@@ -23,16 +26,17 @@ export default function PeminjamRiwayatPage() {
     }, []);
 
     if (isLoading) {
-        return <div className="p-8 text-center text-gray-500 text-sm">Memuat riwayat...</div>;
+        return <div className="py-8 text-center text-sm text-gray-500">Memuat riwayat...</div>;
     }
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Riwayat Peminjaman Alat</h1>
+        <div className="mx-auto w-full max-w-7xl">
+            <h1 className="mb-2 text-xl font-bold text-gray-900 sm:text-2xl">Riwayat Peminjaman Alat</h1>
             <p className="text-sm text-gray-500 mb-6">Daftar seluruh riwayat pengajuan peminjaman alat Anda.</p>
 
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                <table className="w-full text-left border-collapse text-sm">
+            <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+                <div className="overflow-x-auto">
+                <table className="w-full min-w-[780px] text-left border-collapse text-sm">
                     <thead className="bg-gray-50 border-b border-gray-100 text-gray-700">
                         <tr>
                             <th className="p-4 font-semibold">ID</th>
@@ -43,10 +47,10 @@ export default function PeminjamRiwayatPage() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 text-gray-800">
-                        {riwayatList.map((item, index) => {
+                        {pageItems.map((item) => {
                             const daftarAlat = item.items;
                             return (
-                                <tr key={item.id_peminjaman || index} className="hover:bg-gray-50 align-top">
+                                <tr key={item.id_peminjaman} className="hover:bg-gray-50 align-top">
                                     <td className="p-4 font-medium">#{item.id_peminjaman}</td>
                                     <td className="p-4">
                                         <div className="space-y-1">
@@ -83,7 +87,9 @@ export default function PeminjamRiwayatPage() {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
+            <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={riwayatList.length} onPageChange={setPage} />
         </div>
     );
 }

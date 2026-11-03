@@ -23,7 +23,16 @@ export default function AdminKategoriPage() {
     };
 
     useEffect(() => {
-        fetchKategori();
+        let isCancelled = false;
+        kategoriService.getAll()
+            .then((data) => {
+                if (!isCancelled) setKategoriList(Array.isArray(data) ? data : []);
+            })
+            .catch((error: unknown) => console.error('Gagal memuat kategori', error));
+
+        return () => {
+            isCancelled = true;
+        };
     }, []);
 
     const handleAdd = async (e: React.FormEvent) => {
@@ -33,7 +42,7 @@ export default function AdminKategoriPage() {
             setIsAddOpen(false);
             setNamaKategori('');
             fetchKategori();
-        } catch (err) {
+        } catch {
             alert('Gagal menambah kategori');
         }
     };
@@ -45,7 +54,7 @@ export default function AdminKategoriPage() {
             await kategoriService.update(selectedKat.id_kategori, selectedKat.nama_kategori);
             setIsEditOpen(false);
             fetchKategori();
-        } catch (err) {
+        } catch {
             alert('Gagal memperbarui kategori');
         }
     };
@@ -55,7 +64,7 @@ export default function AdminKategoriPage() {
         try {
             await kategoriService.delete(id);
             fetchKategori();
-        } catch (err) {
+        } catch {
             alert('Gagal menghapus kategori');
         }
     };

@@ -6,7 +6,8 @@ const authController = {
     async register(req, res) {
         try {
             const { username, password, role, no_hp, alamat } = req.body;
-            if (!username?.trim() || !password || !no_hp?.trim() || !alamat?.trim()) {
+            const requiredFields = [username, password, no_hp, alamat];
+            if (requiredFields.some((value) => typeof value !== 'string' || !value.trim())) {
                 return res.status(400).json({ error: 'Username, password, nomor HP, dan alamat wajib diisi' });
             }
             if (password.length < 6) {

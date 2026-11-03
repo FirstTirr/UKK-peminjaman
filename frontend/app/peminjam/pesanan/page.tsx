@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Pagination from '@/components/pagination';
+import { usePagination } from '@/src/hooks/use-pagination';
 import {
     peminjamanService,
     Peminjaman,
@@ -11,9 +13,7 @@ export default function PeminjamPesananPage() {
     const [pesananList, setPesananList] = useState<Peminjaman[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Pagination states
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 3;
+    const { pageItems, currentPage, totalPages, setPage } = usePagination(pesananList);
 
     useEffect(() => {
         const fetchPesanan = async () => {
@@ -39,30 +39,24 @@ export default function PeminjamPesananPage() {
         }
     };
 
-    // Kalkulasi Pagination
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentPesanan = pesananList.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(pesananList.length / itemsPerPage);
-
     if (isLoading) {
-        return <div className="p-8 text-center text-gray-500 text-sm">Memuat data pesanan...</div>;
+        return <div className="py-8 text-center text-sm text-gray-500">Memuat data pesanan...</div>;
     }
 
     return (
-        <div className="p-8 max-w-5xl mx-auto">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Progres Pesanan Alat</h1>
+        <div className="mx-auto w-full max-w-5xl">
+            <h1 className="mb-2 text-xl font-bold text-gray-900 sm:text-2xl">Progres Pesanan Alat</h1>
             <p className="text-sm text-gray-500 mb-8">Pantau status pengajuan peminjaman alat secara real-time.</p>
 
             <div className="space-y-4">
-                {currentPesanan.map((item) => {
+                {pageItems.map((item) => {
                     const currentStep = getStatusStep(item.status);
                     const daftarAlat = item.items;
 
                     return (
-                        <div key={item.id_peminjaman} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-4">
-                            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-                                <div className="flex items-center gap-3">
+                        <div key={item.id_peminjaman} className="space-y-4 rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
+                            <div className="flex flex-col gap-2 border-b border-gray-100 pb-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div className="flex flex-wrap items-center gap-3">
                                     <span className="text-xs font-bold text-gray-400">Pesanan #{item.id_peminjaman}</span>
                                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                                         item.status === 'Disetujui' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
@@ -95,7 +89,7 @@ export default function PeminjamPesananPage() {
                                 {daftarAlat.length > 0 ? (
                                     <div className="space-y-1">
                                         {daftarAlat.map((subItem) => (
-                                            <div key={subItem.id_detail} className="flex justify-between text-xs text-gray-800">
+                                            <div key={subItem.id_detail} className="flex justify-between gap-3 text-xs text-gray-800">
                                                 <span className="font-medium">{subItem.nama_alat}</span>
                                                 <span className="text-gray-600">{subItem.jumlah} unit</span>
                                             </div>
@@ -107,7 +101,7 @@ export default function PeminjamPesananPage() {
                             </div>
 
                             <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-700 space-y-1">
-                                <div className="flex justify-between">
+                                <div className="flex flex-col gap-1 sm:flex-row sm:justify-between">
                                     <span>Status Petugas: {item.nama_petugas ? `Ditangani ${item.nama_petugas}` : 'Belum ditugaskan'}</span>
                                     <span className="text-gray-400">Dibuat: {item.created_at?.split('T')[0]}</span>
                                 </div>
@@ -123,28 +117,7 @@ export default function PeminjamPesananPage() {
                 )}
             </div>
 
-            {/* Navigasi Pagination */}
-            {totalPages > 1 && (
-                <div className="flex justify-between items-center mt-6 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                    <button
-                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                        disabled={currentPage === 1}
-                        className="px-4 py-2 border rounded-lg text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                        Sebelumnya
-                    </button>
-                    <span className="text-xs font-medium text-gray-600">
-                        Halaman {currentPage} dari {totalPages}
-                    </span>
-                    <button
-                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
-                        className="px-4 py-2 border rounded-lg text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                        Selanjutnya
-                    </button>
-                </div>
-            )}
+            <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={pesananList.length} onPageChange={setPage} />
         </div>
     );
 }

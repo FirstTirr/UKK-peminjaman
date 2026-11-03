@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Pagination from '@/components/pagination';
+import { usePagination } from '@/src/hooks/use-pagination';
 import {
     peminjamanService,
     Peminjaman,
@@ -22,6 +24,7 @@ export default function PetugasDashboardPage() {
     const [selectedPinjam, setSelectedPinjam] = useState<Peminjaman | null>(null);
     const [isKembaliOpen, setIsKembaliOpen] = useState(false);
     const [tglKembali, setTglKembali] = useState('');
+    const { pageItems, currentPage, totalPages, setPage } = usePagination(peminjamanList);
 
     const fetchData = async () => {
         const data = await peminjamanService.getAll();
@@ -54,7 +57,7 @@ export default function PetugasDashboardPage() {
         try {
             await peminjamanService.updateStatus(id_peminjaman, status);
             alert(`Status berhasil diubah ke ${status}`);
-            fetchData();
+            await fetchData();
         } catch (error: unknown) {
             alert(getErrorMessage(error, 'Gagal mengubah status'));
         }
@@ -68,23 +71,24 @@ export default function PetugasDashboardPage() {
             alert('Pengembalian alat berhasil diproses!');
             setIsKembaliOpen(false);
             setTglKembali('');
-            fetchData();
+            await fetchData();
         } catch (error: unknown) {
             alert(getErrorMessage(error, 'Gagal memproses pengembalian'));
         }
     };
 
     if (isLoading) {
-        return <div className="p-8 text-center text-gray-500 text-sm">Memuat data asli dari database...</div>;
+        return <div className="py-8 text-center text-sm text-gray-500">Memuat data asli dari database...</div>;
     }
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Manajemen & Persetujuan Peminjaman</h1>
+        <div className="mx-auto w-full max-w-7xl">
+            <h1 className="mb-2 text-xl font-bold text-gray-900 sm:text-2xl">Manajemen & Persetujuan Peminjaman</h1>
             <p className="text-sm text-gray-500 mb-8">Data real-time langsung dari tabel database peminjaman.</p>
 
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                <table className="w-full text-left border-collapse text-sm">
+            <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+                <div className="overflow-x-auto">
+                <table className="w-full min-w-[1050px] text-left border-collapse text-sm">
                     <thead className="bg-gray-50 border-b border-gray-100 text-gray-700">
                         <tr>
                             <th className="p-4 font-semibold">ID</th>
@@ -97,7 +101,7 @@ export default function PetugasDashboardPage() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 text-gray-800 align-top">
-                        {peminjamanList.map((item) => (
+                        {pageItems.map((item) => (
                             <tr key={item.id_peminjaman} className="hover:bg-gray-50">
                                 <td className="p-4 font-medium">#{item.id_peminjaman}</td>
                                 <td className="p-4 font-semibold text-gray-900">{item.username}</td>
@@ -126,7 +130,7 @@ export default function PetugasDashboardPage() {
                                         {item.status}
                                     </span>
                                 </td>
-                                <td className="p-4 text-center space-x-2">
+                                <td className="p-4"><div className="flex flex-wrap justify-center gap-2">
                                     {item.status === 'Menunggu' && (
                                         <>
                                             <button 
@@ -154,7 +158,7 @@ export default function PetugasDashboardPage() {
                                     {item.status === 'Selesai' && (
                                         <span className="text-xs text-gray-400 italic">Selesai</span>
                                     )}
-                                </td>
+                                </div></td>
                             </tr>
                         ))}
                         {peminjamanList.length === 0 && (
@@ -164,12 +168,14 @@ export default function PetugasDashboardPage() {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
+            <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={peminjamanList.length} onPageChange={setPage} />
 
             {/* Modal Pengembalian */}
             {isKembaliOpen && selectedPinjam && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-lg space-y-4">
+                    <div className="max-h-[90vh] w-full max-w-md space-y-4 overflow-y-auto rounded-xl bg-white p-5 shadow-lg sm:p-6">
                         <h2 className="text-lg font-bold text-gray-900">Proses Pengembalian Alat</h2>
                         <p className="text-xs text-gray-500">Peminjaman ID: <span className="font-semibold text-gray-800">#{selectedPinjam.id_peminjaman}</span></p>
 

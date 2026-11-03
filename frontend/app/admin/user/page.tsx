@@ -36,7 +36,16 @@ export default function AdminUserPage() {
     };
 
     useEffect(() => {
-        fetchUsers();
+        let isCancelled = false;
+        userService.getAll()
+            .then((data) => {
+                if (!isCancelled) setUserList(Array.isArray(data) ? data : []);
+            })
+            .catch((error: unknown) => console.error('Gagal memuat data user', error));
+
+        return () => {
+            isCancelled = true;
+        };
     }, []);
 
     const handleAdd = async (e: React.FormEvent) => {
@@ -68,8 +77,8 @@ export default function AdminUserPage() {
             const payload: UserPayload = {
                 username: selectedUser.username,
                 role: selectedUser.role,
-                no_hp: selectedUser.no_hp,
-                alamat: selectedUser.alamat
+                no_hp: selectedUser.no_hp || '',
+                alamat: selectedUser.alamat || ''
             };
             if (selectedUser.password) {
                 payload.password = selectedUser.password;

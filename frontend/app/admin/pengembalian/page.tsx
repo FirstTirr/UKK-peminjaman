@@ -43,7 +43,7 @@ export default function AdminPengembalianPage() {
                                     <td className="p-4 font-semibold text-red-600">Rp {Number(item.denda).toLocaleString('id-ID')}</td>
                                     <td className="p-4 font-semibold">Rp {Number(item.total_pembayaran).toLocaleString('id-ID')}</td>
                                     <td className="p-4">
-                                        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                                        <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${item.status === 'Selesai' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-blue-200 bg-blue-50 text-blue-700'}`}>
                                             {item.status}
                                         </span>
                                     </td>

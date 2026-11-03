@@ -36,16 +36,16 @@ export default function AdminDashboardPage() {
     }, []);
 
     return (
-        <div>
+        <div className="mx-auto w-full max-w-7xl">
             <div className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard Admin</h1>
+                <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">Dashboard Admin</h1>
                 <p className="text-sm text-gray-500 mt-1">Selamat datang kembali, Administrator sistem.</p>
             </div>
 
             {loading ? (
                 <p className="text-sm text-gray-500">Memuat data...</p>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
                     <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                         <p className="text-sm font-medium text-gray-500">Total Alat</p>
                         <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalAlat}</p>

@@ -2,15 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { alatService } from '@/src/services/alat';
+import { alatService, Alat } from '@/src/services/alat';
 import { peminjamanService, PayloadPeminjaman } from '@/src/services/peminjaman';
-
-interface Alat {
-    id_alat: number;
-    nama_alat: string;
-    harga_perhari: number | string;
-    stok: number;
-}
 
 interface AlatTerpilih {
     id_alat: number;
@@ -129,14 +122,14 @@ export default function PeminjamCatalogPage() {
     };
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
+        <div className="mx-auto w-full max-w-7xl">
             <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl mb-6 text-sm">
                 Lengkapi alamat pada bagian <span className="font-semibold">Data Pengiriman</span> sebelum mengirim pengajuan.
             </div>
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                    <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
                         <h2 className="text-base font-bold text-gray-900 mb-1">Data Pengiriman</h2>
                         <p className="text-xs text-gray-500 mb-4">Dipakai petugas untuk mengantarkan alat.</p>
                         <div>
@@ -152,7 +145,7 @@ export default function PeminjamCatalogPage() {
                         </div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                    <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
                         <h2 className="text-base font-bold text-gray-900 mb-1">Pilih Alat</h2>
                         <p className="text-xs text-gray-500 mb-4">Bebas menambah lebih dari satu jenis alat dalam satu pengajuan.</p>
                         
@@ -192,8 +185,8 @@ export default function PeminjamCatalogPage() {
                         </div>
 
                         {selectedItems.length > 0 ? (
-                            <div className="border border-gray-100 rounded-lg overflow-hidden mt-4">
-                                <table className="w-full text-left text-sm">
+                            <div className="mt-4 overflow-x-auto rounded-lg border border-gray-100">
+                                <table className="w-full min-w-[480px] text-left text-sm">
                                     <thead className="bg-gray-50 text-gray-700 border-b border-gray-100">
                                         <tr>
                                             <th className="p-3 font-semibold">Nama Alat</th>
@@ -225,7 +218,7 @@ export default function PeminjamCatalogPage() {
                         )}
                     </div>
 
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                    <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
                         <h2 className="text-base font-bold text-gray-900 mb-4">Tanggal Peminjaman</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
@@ -253,7 +246,7 @@ export default function PeminjamCatalogPage() {
                 </div>
 
                 <div>
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm sticky top-6 space-y-4">
+                    <div className="space-y-4 rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6 lg:sticky lg:top-6">
                         <h2 className="text-base font-bold text-gray-900 border-b border-gray-100 pb-3">Ringkasan Pengajuan</h2>
                         
                         <div className="space-y-3 text-sm">
